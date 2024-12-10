@@ -1,0 +1,6 @@
+.DS_Store
+.env
+.venv
+.local.env
+.venv
+.pytest_cache
