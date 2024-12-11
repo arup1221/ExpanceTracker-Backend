@@ -38,3 +38,18 @@ class LoginSerializer(serializers.Serializer):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
+        
+
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+    def validate(self, data):
+        from rest_framework_simplejwt.tokens import RefreshToken
+        try:
+            refresh_token = data.get('refresh')
+            token = RefreshToken(refresh_token)
+            token.blacklist()  # Blacklist the token
+        except Exception as e:
+            raise serializers.ValidationError('Invalid or expired token.')
+        return data
