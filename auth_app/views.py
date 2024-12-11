@@ -2,7 +2,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import CustomUser
-from .serializers import RegisterSerializer, LoginSerializer, LogoutSerializer
+from .serializers import RegisterSerializer, LoginSerializer, LogoutSerializer, CustomUserSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, status
+from rest_framework.generics import RetrieveUpdateAPIView
 
 class RegisterView(APIView):
     def post(self, request):
@@ -25,3 +28,25 @@ class LogoutView(APIView):
         if serializer.is_valid():
             return Response({"detail": "Logout successful."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# class UserDetailsViewSet(viewsets.ModelViewSet):
+#     serializer_class = CustomUserSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         # Restrict to the currently authenticated user
+#         return CustomUser.objects.filter(id=self.request.user.id)
+
+#     def perform_update(self, serializer):
+#         # Optionally customize how the user is updated
+#         serializer.save()
+
+class UserDetailsAPI(RetrieveUpdateAPIView):
+    
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        # Return the currently authenticated user
+        return self.request.user
