@@ -40,8 +40,15 @@ class BudgetSerializer(serializers.ModelSerializer):
     )
     user = serializers.StringRelatedField()  
     amount_spent = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    remaining_amount = serializers.SerializerMethodField()  # New field
 
     class Meta:
         model = Budget
-        fields = ['id', 'user', 'category', 'limit', 'start_date', 'end_date', 'amount_spent']
-        read_only_fields = ['user', 'amount_spent']
+        fields = ['id', 'user', 'category', 'limit', 'start_date', 'end_date', 'amount_spent', 'remaining_amount']
+        read_only_fields = ['user', 'amount_spent', 'remaining_amount']
+
+    def get_remaining_amount(self, obj):
+        amount_spent = obj.amount_spent()
+        remaining_amount = obj.limit - amount_spent
+        return f"{remaining_amount:.2f}"
+
